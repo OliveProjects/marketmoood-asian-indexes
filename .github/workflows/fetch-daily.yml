@@ -1,0 +1,37 @@
+name: Fetch Asian Index History (Daily)
+
+on:
+  schedule:
+    - cron: '0 11 * * *'   # 11:00 UTC daily (after all Asian markets close)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch daily data
+        run: python scripts/fetch_daily.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "daily: $(date -u '+%Y-%m-%d')"
+          git pull --rebase origin main
+          git push
