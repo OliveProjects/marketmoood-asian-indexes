@@ -101,30 +101,34 @@ def main():
                 print(f"    Stooq failed for {name}: {e}")
 
         if not history:
-            print(f"  {name} (Yahoo {yahoo_sym})")
-            try:
-                r = requests.get(
-                    f"{YAHOO_BASE}{yahoo_sym}",
-                    params={"interval": "1d", "range": "5y"},
-                    headers=HEADERS, timeout=20,
-                )
-                r.raise_for_status()
-                result = r.json()["chart"]["result"][0]
-                timestamps = result["timestamp"]
-                closes = result["indicators"]["quote"][0]["close"]
-                parsed = [
-                    {"x": int(ts) * 1000, "y": round(float(c), 4)}
-                    for ts, c in zip(timestamps, closes)
-                    if c is not None
-                ]
-                if len(parsed) >= 2:
-                    history = parsed
-            except Exception as e:
-                print(f"    Yahoo failed for {name}: {e}")
+            for range_ in ("5y", "max", "2y"):
+                print(f"  {name} (Yahoo {yahoo_sym}, range={range_})")
+                try:
+                    r = requests.get(
+                        f"{YAHOO_BASE}{yahoo_sym}",
+                        params={"interval": "1d", "range": range_},
+                        headers=HEADERS, timeout=20,
+                    )
+                    r.raise_for_status()
+                    result = r.json()["chart"]["result"][0]
+                    timestamps = result["timestamp"]
+                    closes = result["indicators"]["quote"][0]["close"]
+                    parsed = [
+                        {"x": int(ts) * 1000, "y": round(float(c), 4)}
+                        for ts, c in zip(timestamps, closes)
+                        if c is not None
+                    ]
+                    if len(parsed) >= 2:
+                        history = parsed
+                        break
+                    print(f"    Yahoo {range_}: only {len(parsed)} points")
+                except Exception as e:
+                    print(f"    Yahoo {range_} failed for {name}: {e}")
+                time.sleep(1)
 
         if not history:
             print(f"    SKIP {name}: no data from Stooq or Yahoo")
-            time.sleep(0.4)
+            time.sleep(1)
             continue
 
         price, prev_close = fetch_live_yahoo(yahoo_sym)
@@ -138,7 +142,7 @@ def main():
             "changePct": change_pct, "changeAbs": change_abs,
             "history": history,
         })
-        time.sleep(0.4)
+        time.sleep(1)
 
     if len(indices) < 3:
         print(f"  Only {len(indices)} index/indices fetched (expected 6) — skipping save to preserve existing data.")
