@@ -27,6 +27,9 @@ SYMBOLS = {
     "KOSPI":               "%5EKS11",
     "Nifty 50":            "%5ENSEI",
     "ASX 200":             "%5EAXJO",
+    "Taiwan Weighted":     "%5ETWII",
+    "Straits Times":       "%5ESTI",
+    "NZX 50":              "%5ENZ50",
 }
 
 
