@@ -2,7 +2,9 @@ name: Fetch Asian Index Data
 
 on:
   schedule:
-    - cron: '*/5 * * * *'   # every 5 minutes
+    - cron: '*/5 0-8 * * 1-5'     # Mon-Fri 00:00-08:55 UTC
+    - cron: '0 9 * * 1-5'          # final run 09:00 UTC
+    - cron: '*/5 22-23 * * 0'     # Sunday evening for Monday Tokyo open
   workflow_dispatch:
 
 permissions:
