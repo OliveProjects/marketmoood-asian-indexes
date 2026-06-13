@@ -31,7 +31,7 @@ SYMBOLS = {
     "Straits Times":       "%5ESTI",
     "NZX 50":              "%5ENZ50",
     "SET":                 "%5ESET.BK",
-    "PSEi":                "%5EPSEI",
+    "PSEi":                "PSEI.PS",
     "TASI":                "%5ETASI.SR",
 }
 

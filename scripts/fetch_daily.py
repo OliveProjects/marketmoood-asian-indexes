@@ -33,7 +33,7 @@ INDEXES = {
     "Straits Times":      (None,     "%5ESTI"),
     "NZX 50":             (None,     "%5ENZ50"),
     "SET":                ("^set",   "%5ESET.BK"),
-    "PSEi":               ("^psei",  "%5EPSEI"),
+    "PSEi":               ("^psei",  "PSEI.PS"),
     "TASI":               ("^tasi",  "%5ETASI.SR"),
 }
 
