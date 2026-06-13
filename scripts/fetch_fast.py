@@ -30,6 +30,9 @@ SYMBOLS = {
     "Taiwan Weighted":     "%5ETWII",
     "Straits Times":       "%5ESTI",
     "NZX 50":              "%5ENZ50",
+    "SET":                 "%5ESET.BK",
+    "PSEi":                "%5EPSEI",
+    "TASI":                "%5ETASI.SR",
 }
 
 

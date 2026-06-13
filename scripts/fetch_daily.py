@@ -32,6 +32,9 @@ INDEXES = {
     "Taiwan Weighted":    ("^twii",  "%5ETWII"),
     "Straits Times":      (None,     "%5ESTI"),
     "NZX 50":             (None,     "%5ENZ50"),
+    "SET":                ("^set",   "%5ESET.BK"),
+    "PSEi":               ("^psei",  "%5EPSEI"),
+    "TASI":               ("^tasi",  "%5ETASI.SR"),
 }
 
 
@@ -147,8 +150,8 @@ def main():
         })
         time.sleep(1)
 
-    if len(indices) < 5:
-        print(f"  Only {len(indices)} index/indices fetched (expected 9) — skipping save to preserve existing data.")
+    if len(indices) < 7:
+        print(f"  Only {len(indices)} index/indices fetched (expected 12) — skipping save to preserve existing data.")
         return
 
     save("data/asian-history.json", {
