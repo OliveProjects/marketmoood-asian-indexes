@@ -101,8 +101,11 @@ def main():
                 )
                 r.raise_for_status()
                 parsed = parse_stooq_csv(r.text)
-                if len(parsed) >= 2:
+                stale_cutoff = int((now - timedelta(days=30)).timestamp() * 1000)
+                if len(parsed) >= 2 and parsed[-1]["x"] >= stale_cutoff:
                     history = parsed
+                elif len(parsed) >= 2:
+                    print(f"    Stooq data for {name} is stale (last={parsed[-1]['x']}), trying Yahoo")
             except Exception as e:
                 print(f"    Stooq failed for {name}: {e}")
 
