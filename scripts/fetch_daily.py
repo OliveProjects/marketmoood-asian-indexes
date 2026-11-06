@@ -74,9 +74,27 @@ def fetch_live_yahoo(symbol: str) -> tuple:
         return (
             meta.get("regularMarketPrice"),
             meta.get("chartPreviousClose") or meta.get("previousClose"),
+            meta.get("regularMarketTime"),
+            meta.get("gmtoffset") or 0,
         )
     except Exception:
-        return None, None
+        return None, None, None, 0
+
+
+def with_latest_session(history: list, price, market_time, gmtoffset: int) -> list:
+    """Adds the session the live quote belongs to when the daily bars don't have it yet.
+
+    Yahoo leaves a finished session's close empty for hours, and the None filter drops
+    that bar. The app compares today with the last bar before today, so without this
+    every daily change covered two sessions instead of one.
+    """
+    if not price or not market_time:
+        return history
+    session_day = (market_time + gmtoffset) // 86400
+    last_day = (history[-1]["x"] // 1000 + gmtoffset) // 86400
+    if last_day >= session_day:
+        return history
+    return history + [{"x": int(market_time) * 1000, "y": round(float(price), 4)}]
 
 
 def main():
@@ -140,10 +158,12 @@ def main():
             time.sleep(1)
             continue
 
-        price, prev_close = fetch_live_yahoo(yahoo_sym)
+        price, _, market_time, gmtoffset = fetch_live_yahoo(yahoo_sym)
+        history = with_latest_session(history, price, market_time, gmtoffset)
         if not price:
             price = history[-1]["y"]
-            prev_close = history[-2]["y"]
+        # The bars, not Yahoo's chartPreviousClose: that one can lag a session here
+        prev_close = history[-2]["y"]
         change_abs = price - prev_close
         change_pct = change_abs / prev_close * 100.0
         indices.append({
